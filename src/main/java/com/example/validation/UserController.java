@@ -3,7 +3,9 @@ package com.example.validation;
 import com.example.validation.dto.UserDto;
 import com.example.validation.dto.UserPartialDto;
 import com.example.validation.groups.MandatoryStep;
-import jakarta.validation.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +26,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService service;
-
     // @Validated가 붙은 클래스의 메서드 파라미터는 검증이 가능하다
     // validate-params?agd=14
     @GetMapping("/validate-params")
@@ -72,7 +73,6 @@ public class UserController {
         // 예외가 가진 데이터를 불러오기
         List<FieldError> fieldErrors
                 = exception.getBindingResult().getFieldErrors();
-
         // 각각의 에러에 대해서 순회하며
         for (FieldError error: fieldErrors) {
             String fieldName = error.getField();
@@ -82,7 +82,7 @@ public class UserController {
         return errors;
     }
 
-    @ExceptionHandler(ConstraintDeclarationException.class)
+    @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, Object> handleConstraintException(
             final ConstraintViolationException exception
